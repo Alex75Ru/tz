@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 
 class Book(models.Model):
@@ -35,8 +39,8 @@ class Author(models.Model):
 class Reading(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     read_id = models.ForeignKey
-    user_id = models.IntegerField()
-    book_id = models.IntegerField()
+    user_id = models.ForeignKey
+    book_id = models.ForeignKey
     is_read = models.BooleanField(default=False)
 
     class Meta:

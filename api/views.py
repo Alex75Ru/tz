@@ -1,13 +1,17 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, renderers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions
-from api.serializers import UserSerializer
+
+from api.models import Book, User, Genre, Author
+from api.serializers import UserSerializer, GenreSerializer, AuthorSerializer
+from api.serializers import BookSerializer
 from api.permissions import IsOwnerOrReadOnly
+
 
 class BookViewSet(viewsets.ModelViewSet):
     """
-    This viewset automatically provides `list`, `create`, `retrieve`,
+    This viewSet automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
 
     Additionally we also provide an extra `highlight` action.
@@ -26,9 +30,52 @@ class BookViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
 
+class AuthorViewSet(viewsets.ModelViewSet):
+    """
+    This viewSet automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
+    """
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
+
+    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        author = self.get_object()
+        return Response(author.highlighted)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    This viewset automatically provides `list` and `retrieve` actions.
+    This viewSet automatically provides `list` and `retrieve` actions.
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    """
+    This viewSet automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
+    """
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
+
+    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        genre = self.get_object()
+        return Response(genre.highlighted)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+

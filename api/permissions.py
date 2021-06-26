@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from snippets.permissions import IsOwnerOrReadOnly
+
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
