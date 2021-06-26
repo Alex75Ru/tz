@@ -3,8 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions
 
-from api.models import Book, User, Genre, Author
-from api.serializers import UserSerializer, GenreSerializer, AuthorSerializer
+from api.models import Book, User, Genre, Author, Reading
+from api.serializers import UserSerializer, GenreSerializer, AuthorSerializer, ReadingSerializer
 from api.serializers import BookSerializer
 from api.permissions import IsOwnerOrReadOnly
 
@@ -79,3 +79,23 @@ class GenreViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+
+class ReadingViewSet(viewsets.ModelViewSet):
+    """
+    This viewSet automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
+    """
+    queryset = Reading.objects.all()
+    serializer_class = ReadingSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
+
+    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
+        reading = self.get_object()
+        return Response(reading.highlighted)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)

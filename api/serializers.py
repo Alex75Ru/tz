@@ -27,7 +27,7 @@ class GenreSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Genre
-        fields = ['genre_id', 'genre_name', 'highlight', 'owner',]
+        fields = ['genre_id', 'genre_name', 'highlight', 'owner']
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
@@ -45,5 +45,5 @@ class ReadingSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Reading
-        fields = ['created', 'read_id', 'user_id', 'book_id', 'is_read', 'highlight', 'owner',]
+        fields = ['created', 'read_id', 'user_id', 'book_id', 'is_read', 'highlight', 'owner']
 
