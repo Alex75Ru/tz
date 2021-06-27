@@ -3,14 +3,14 @@ from django.contrib.auth.models import User
 from api.models import Book, Genre, Author, Reading
 
 
-class BookSerializer(serializers.HyperlinkedModelSerializer):
+class BookSerializer(serializers.CreateOnlyDefault):
     owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='book-highlight', format='html')
 
     class Meta:
         model = Book
-        fields = ['book_id', 'created', 'created', 'title', 'highlight', 'owner',
-                  'description', 'genre_id', 'author_id', 'user_id', 'cover', 'pdf_file']
+        fields = ['created', 'title', 'highlight', 'owner',
+                  'description', 'genre_name', 'author_name', 'username', 'cover', 'pdf_file']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -27,7 +27,7 @@ class GenreSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Genre
-        fields = ['genre_id', 'genre_name', 'highlight', 'owner']
+        fields = ['genre_name', 'highlight', 'owner']
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
@@ -36,7 +36,7 @@ class AuthorSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Author
-        fields = ['author_id', 'full_name', 'highlight', 'owner']
+        fields = ['author_name', 'highlight', 'owner']
 
 
 class ReadingSerializer(serializers.HyperlinkedModelSerializer):
@@ -45,5 +45,5 @@ class ReadingSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Reading
-        fields = ['created', 'read_id', 'user_id', 'book_id', 'is_read', 'highlight', 'owner']
+        fields = ['created', 'username', 'title', 'is_read', 'highlight', 'owner']
 
