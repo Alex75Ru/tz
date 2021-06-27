@@ -26,8 +26,13 @@ class BookViewSet(viewsets.ModelViewSet):
         book = self.get_object()
         return Response(book.highlighted)
 
+    def create(self, validated_data):
+        return Comment(**validated_data)
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
