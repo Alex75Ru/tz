@@ -7,22 +7,18 @@ class BookSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='book-highlight', format='html')
 
-    @staticmethod
-    def perform_create(serializer):
-        serializer.save()
-
     class Meta:
         model = Book
-        fields = ['created', 'title', 'highlight', 'owner',
-                  'description', 'genre_name', 'author_name', 'cover', 'pdf_file']
+        fields = ['book_id', 'created', 'created', 'title', 'highlight', 'owner',
+                  'description', 'genre_id', 'author_id', 'user_id', 'cover', 'pdf_file']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.HyperlinkedRelatedField(many=True, view_name='api-detail', read_only=True)
+    apis = serializers.HyperlinkedRelatedField(many=True, view_name='api-detail', read_only=True)
 
     class Meta:
         model = User
-        fields = ['url', 'id', 'username', 'owner']
+        fields = ['url', 'id', 'username', 'books']
 
 
 class GenreSerializer(serializers.HyperlinkedModelSerializer):
@@ -31,7 +27,7 @@ class GenreSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Genre
-        fields = ['genre_name', 'highlight', 'owner']
+        fields = ['genre_id', 'genre_name', 'highlight', 'owner']
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
@@ -40,7 +36,7 @@ class AuthorSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Author
-        fields = ['author_name', 'highlight', 'owner']
+        fields = ['author_id', 'full_name', 'highlight', 'owner']
 
 
 class ReadingSerializer(serializers.HyperlinkedModelSerializer):
@@ -49,5 +45,5 @@ class ReadingSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Reading
-        fields = ['created', 'username', 'title', 'is_read', 'highlight', 'owner']
+        fields = ['created', 'read_id', 'user_id', 'book_id', 'is_read', 'highlight', 'owner']
 
