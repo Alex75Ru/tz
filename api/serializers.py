@@ -8,7 +8,7 @@ class BookSerializer(serializers.HyperlinkedModelSerializer):
     highlight = serializers.HyperlinkedIdentityField(view_name='book-highlight', format='html')
 
     def create(self, validated_data):
-        validated_data.save()
+        return Book(**validated_data)
 
     class Meta:
         model = Book
