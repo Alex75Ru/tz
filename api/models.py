@@ -45,7 +45,7 @@ class Author(models.Model):
 class Book(models.Model):
     created = models.DateTimeField(verbose_name='Дата добавления', auto_now_add=True)
     title = models.CharField(verbose_name='Название', max_length=100)
-    description = RichTextUploadingField()(verbose_name='Описание', max_length=500)
+    description = RichTextUploadingField(verbose_name='Описание', max_length=500)
     genre_name = models.ForeignKey(Genre, verbose_name='Жанр', max_length=100, on_delete=models.CASCADE)
     author_name = models.ForeignKey(Author, verbose_name='Автор', max_length=100, on_delete=models.CASCADE)
     user = models.ForeignKey(User, verbose_name='Пользователь', max_length=100, on_delete=models.CASCADE)

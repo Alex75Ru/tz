@@ -1,4 +1,4 @@
-from rest_framework import viewsets, renderers
+from rest_framework import viewsets, renderers, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -8,12 +8,32 @@ from api.serializers import UserSerializer, GenreSerializer, AuthorSerializer, R
 from api.serializers import BookSerializer
 from api.permissions import IsOwnerOrReadOnly
 from .serializers import PostSerializer
+from rest_framework import filters
+from .serializers import RegisterSerializer
+
+
+class RegisterView(generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args,  **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "message": "Пользователь успешно создан",
+        })
 
 
 class PostViewSet(viewsets.ModelViewSet):
+    search_fields = ['content', 'h1']
+    filter_backends = (filters.SearchFilter,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
     lookup_field = 'slug'
+    permission_classes = [permissions.AllowAny]
+    pagination_class = PageNumberSetPagination
 
 
 class BookViewSet(viewsets.ModelViewSet):
