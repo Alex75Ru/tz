@@ -3,10 +3,17 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import permissions
 
-from api.models import Book, User, Genre, Author, Reading
+from api.models import Book, User, Genre, Author, Reading, Post
 from api.serializers import UserSerializer, GenreSerializer, AuthorSerializer, ReadingSerializer
 from api.serializers import BookSerializer
 from api.permissions import IsOwnerOrReadOnly
+from .serializers import PostSerializer
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+    lookup_field = 'slug'
 
 
 class BookViewSet(viewsets.ModelViewSet):

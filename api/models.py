@@ -1,8 +1,25 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
+from django.utils import timezone
+from ckeditor_uploader.fields import RichTextUploadingField
+from taggit.managers import TaggableManager
 
 
-User = get_user_model()
+class Post(models.Model):
+    h1 = models.CharField(max_length=200)
+    title = models.CharField(max_length=200)
+    slug = models.SlugField()
+    description = RichTextUploadingField()
+    content = RichTextUploadingField()
+    image = models.ImageField()
+    created_at = models.DateField(default=timezone.now)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    tags = TaggableManager()
+
+    def __str__(self):
+        return self.title
 
 
 class Genre(models.Model):
@@ -28,7 +45,7 @@ class Author(models.Model):
 class Book(models.Model):
     created = models.DateTimeField(verbose_name='Дата добавления', auto_now_add=True)
     title = models.CharField(verbose_name='Название', max_length=100)
-    description = models.TextField(verbose_name='Описание', max_length=500)
+    description = RichTextUploadingField()(verbose_name='Описание', max_length=500)
     genre_name = models.ForeignKey(Genre, verbose_name='Жанр', max_length=100, on_delete=models.CASCADE)
     author_name = models.ForeignKey(Author, verbose_name='Автор', max_length=100, on_delete=models.CASCADE)
     user = models.ForeignKey(User, verbose_name='Пользователь', max_length=100, on_delete=models.CASCADE)
