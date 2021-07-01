@@ -31,12 +31,15 @@ class Book(models.Model):
     description = models.TextField(verbose_name='Описание', max_length=500)
     genre_name = models.ForeignKey(Genre, verbose_name='Жанр', max_length=100, on_delete=models.CASCADE)
     author_name = models.ForeignKey(Author, verbose_name='Автор', max_length=100, on_delete=models.CASCADE)
-    username = models.ForeignKey(User, verbose_name='Пользователь', max_length=100, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Пользователь', max_length=100, on_delete=models.CASCADE)
     cover = models.ImageField(verbose_name='Обложка')
     pdf_file = models.FileField(verbose_name='Книга в формате PDF')
 
     def __str__(self):
         return self.title
+
+    def perform_create(self):
+        pass
 
     class Meta:
         ordering = ['created']

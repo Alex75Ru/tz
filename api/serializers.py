@@ -1,11 +1,12 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from api.models import Book, Genre, Author, Reading
+from api.models import Book, Genre, Author, Reading, User
 
 
 class BookSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='book-highlight', format='html')
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def create(self, validated_data):
         return Book(**validated_data)
@@ -13,15 +14,16 @@ class BookSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Book
         fields = ['created', 'title', 'highlight', 'owner',
-                  'description', 'genre_name', 'author_name', 'cover', 'pdf_file']
+                  'description', 'genre_name', 'author_name', 'user', 'cover', 'pdf_file']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     apis = serializers.HyperlinkedRelatedField(many=True, view_name='api-detail', read_only=True)
 
+
     class Meta:
         model = User
-        fields = ['url', 'id', 'username', 'apis']
+        fields = ['url', 'id', 'user', 'apis']
 
 
 class GenreSerializer(serializers.HyperlinkedModelSerializer):
