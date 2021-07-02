@@ -22,7 +22,7 @@ class Post(models.Model):
 
 
 class Genre(models.Model):
-    name = models.TextField()
+    name = models.TextField(verbose_name='Жанр', default='Поэма', max_length=100)
 
     def __str__(self):
         return self.name
@@ -32,7 +32,7 @@ class Genre(models.Model):
 
 
 class Author(models.Model):
-    name = models.CharField(verbose_name='Прочитано', default='Александр Пушкин', max_length=100)
+    name = models.CharField(verbose_name='Автор', default='Александр Пушкин', max_length=100)
 
     def __str__(self):
         return self.name
@@ -62,8 +62,8 @@ class Book(models.Model):
 
 
 class Reading(models.Model):
-    created = models.DateTimeField(verbose_name='Жанр', auto_now_add=True, max_length=100)
-    username = models.ForeignKey(User, verbose_name='Пользователь', max_length=100, on_delete=models.CASCADE)
+    created = models.DateTimeField(verbose_name='Создано', auto_now_add=True, max_length=100)
+    user = models.ForeignKey(User, verbose_name='Пользователь', max_length=100, on_delete=models.CASCADE)
     title = models.ForeignKey(Book, verbose_name='Книга', max_length=100, on_delete=models.CASCADE)
     is_read = models.BooleanField(verbose_name='Прочитано', default=False)
 
