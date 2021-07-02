@@ -10,6 +10,7 @@ from api.permissions import IsOwnerOrReadOnly
 from .serializers import PostSerializer
 from rest_framework import filters
 from .serializers import RegisterSerializer
+from rest_framework import pagination
 
 
 class RegisterView(generics.GenericAPIView):
@@ -24,6 +25,12 @@ class RegisterView(generics.GenericAPIView):
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
             "message": "Пользователь успешно создан",
         })
+
+
+class PageNumberSetPagination(pagination.PageNumberPagination):
+    page_size = 6
+    page_size_query_param = 'page_size'
+    ordering = 'created_at'
 
 
 class PostViewSet(viewsets.ModelViewSet):

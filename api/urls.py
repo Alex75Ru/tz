@@ -15,6 +15,7 @@ router.register(r'posts', views.PostViewSet, basename='posts')
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
+    path('api/', include(router.urls)),
     path("", include(router.urls)),
     path("api/token/", TokenObtainPairView.as_view(), name="token"),
     path("api/refresh_token/", TokenRefreshView.as_view(), name="refresh_token"),
