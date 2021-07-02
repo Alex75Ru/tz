@@ -11,6 +11,7 @@ router.register(r'books', views.BookViewSet)
 router.register(r'authors', views.AuthorViewSet)
 router.register(r'genres', views.GenreViewSet)
 router.register(r'users', views.UserViewSet)
+router.register(r'reading', views.ReadingViewSet)
 router.register(r'posts', views.PostViewSet, basename='posts')
 
 # The API URLs are now determined automatically by the router.

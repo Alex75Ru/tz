@@ -53,37 +53,37 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
+    # owner = serializers.ReadOnlyField(source='owner.username')
     # highlight = serializers.HyperlinkedIdentityField(view_name='author-highlight', format='html')
 
     class Meta:
         model = Author
-        fields = ['name', 'owner']
+        fields = ['id', 'name']
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
+    # owner = serializers.ReadOnlyField(source='owner.username')
     # highlight = serializers.HyperlinkedIdentityField(view_name='genre-highlight', format='html')
 
     class Meta:
         model = Genre
-        fields = ['name', 'owner']
+        fields = ['id', 'name']
 
 
 class BookSerializer(serializers.ModelSerializer):
 
-    owner = serializers.ReadOnlyField(source='owner.username')
+    # owner = serializers.ReadOnlyField(source='owner.username')
     # highlight = serializers.HyperlinkedIdentityField(view_name='book-highlight', format='html')
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     author = AuthorSerializer(read_only=True)
-    genre = GenreSerializer(read_only=True)
+    genre = GenreSerializer()
 
     def create(self, validated_data):
         return Book(**validated_data)
 
     class Meta:
         model = Book
-        fields = ['created', 'title', 'owner', 'id',
+        fields = ['id', 'created', 'title',
                   'description', 'genre', 'author', 'user', 'cover', 'pdf_file']
 
 
