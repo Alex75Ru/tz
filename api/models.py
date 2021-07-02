@@ -22,31 +22,31 @@ class Post(models.Model):
 
 
 class Genre(models.Model):
-    genre_name = models.TextField()
+    name = models.TextField()
 
     def __str__(self):
-        return self.genre_name
+        return self.name
 
     class Meta:
-        ordering = ['genre_name']
+        ordering = ['name']
 
 
 class Author(models.Model):
-    author_name = models.CharField(verbose_name='Прочитано', default='Александр Пушкин', max_length=100)
+    name = models.CharField(verbose_name='Прочитано', default='Александр Пушкин', max_length=100)
 
     def __str__(self):
-        return self.author_name
+        return self.name
 
     class Meta:
-        ordering = ['author_name']
+        ordering = ['name']
 
 
 class Book(models.Model):
     created = models.DateTimeField(verbose_name='Дата добавления', auto_now_add=True)
     title = models.CharField(verbose_name='Название', max_length=100)
     description = RichTextUploadingField(verbose_name='Описание', max_length=500)
-    genre_name = models.ForeignKey(Genre, verbose_name='Жанр', max_length=100, on_delete=models.CASCADE)
-    author_name = models.ForeignKey(Author, verbose_name='Автор', max_length=100, on_delete=models.CASCADE)
+    genre = models.ManyToManyField(Genre, verbose_name='Жанр', max_length=100)
+    author = models.ManyToManyField(Author, verbose_name='Автор', max_length=100)
     user = models.ForeignKey(User, verbose_name='Пользователь', max_length=100, on_delete=models.CASCADE)
     cover = models.ImageField(verbose_name='Обложка')
     pdf_file = models.FileField(verbose_name='Книга в формате PDF')

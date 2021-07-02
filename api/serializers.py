@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    apis = serializers.HyperlinkedRelatedField(many=True, view_name='api-detail', read_only=True)
+    books = serializers.HyperlinkedRelatedField(many=True, view_name='book-detail', read_only=True)
 
     class Meta:
         model = User
@@ -52,43 +52,46 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
         }
 
 
-class BookSerializer(serializers.HyperlinkedModelSerializer):
+class AuthorSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    highlight = serializers.HyperlinkedIdentityField(view_name='book-highlight', format='html')
+    # highlight = serializers.HyperlinkedIdentityField(view_name='author-highlight', format='html')
+
+    class Meta:
+        model = Author
+        fields = ['name', 'owner']
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+    # highlight = serializers.HyperlinkedIdentityField(view_name='genre-highlight', format='html')
+
+    class Meta:
+        model = Genre
+        fields = ['name', 'owner']
+
+
+class BookSerializer(serializers.ModelSerializer):
+
+    owner = serializers.ReadOnlyField(source='owner.username')
+    # highlight = serializers.HyperlinkedIdentityField(view_name='book-highlight', format='html')
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    author = AuthorSerializer(read_only=True)
+    genre = GenreSerializer(read_only=True)
 
     def create(self, validated_data):
         return Book(**validated_data)
 
     class Meta:
         model = Book
-        fields = ['created', 'title', 'highlight', 'owner',
-                  'description', 'genre_name', 'author_name', 'user', 'cover', 'pdf_file']
-
-
-class GenreSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    highlight = serializers.HyperlinkedIdentityField(view_name='genre-highlight', format='html')
-
-    class Meta:
-        model = Genre
-        fields = ['genre_name', 'highlight', 'owner']
-
-
-class AuthorSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    highlight = serializers.HyperlinkedIdentityField(view_name='author-highlight', format='html')
-
-    class Meta:
-        model = Author
-        fields = ['author_name', 'highlight', 'owner']
+        fields = ['created', 'title', 'owner', 'id',
+                  'description', 'genre', 'author', 'user', 'cover', 'pdf_file']
 
 
 class ReadingSerializer(serializers.HyperlinkedModelSerializer):
     reading = serializers.ReadOnlyField(source='owner.username')
-    highlight = serializers.HyperlinkedIdentityField(view_name='reading-highlight', format='html')
+    # highlight = serializers.HyperlinkedIdentityField(view_name='reading-highlight', format='html')
 
     class Meta:
         model = Reading
-        fields = ['created', 'username', 'title', 'is_read', 'highlight', 'owner']
+        fields = ['created', 'username', 'title', 'is_read', 'owner']
 
