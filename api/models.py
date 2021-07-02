@@ -22,7 +22,7 @@ class Post(models.Model):
 
 
 class Genre(models.Model):
-    name = models.TextField(verbose_name='Жанр', default='Поэма', max_length=100)
+    name = models.CharField(verbose_name='Жанр', default='Поэма', max_length=100)
 
     def __str__(self):
         return self.name
