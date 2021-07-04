@@ -1,5 +1,6 @@
-from rest_framework import viewsets, renderers, generics
+from rest_framework import viewsets, renderers, generics, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import permissions
 
@@ -123,13 +124,19 @@ class ReadingViewSet(viewsets.ModelViewSet):
     """
     queryset = Reading.objects.all()
     serializer_class = ReadingSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
-    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
-    def highlight(self, request, *args, **kwargs):
-        reading = self.get_object()
-        return Response(reading.highlighted)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save()
+
+    def post(self, request):
+        serializer = ReadingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request):
+        pass

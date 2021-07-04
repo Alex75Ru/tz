@@ -58,7 +58,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ['id', 'name']
+        fields = ['id']
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -67,7 +67,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Genre
-        fields = ['id', 'name']
+        fields = ['id']
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -88,11 +88,19 @@ class BookSerializer(serializers.ModelSerializer):
         lookup_field = 'genre'
 
 
+
+
+
 class ReadingSerializer(serializers.HyperlinkedModelSerializer):
-    reading = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.ReadOnlyField(source='owner.username')
     # highlight = serializers.HyperlinkedIdentityField(view_name='reading-highlight', format='html')
 
     class Meta:
         model = Reading
-        fields = ['created', 'username', 'title', 'is_read', 'owner']
+        fields = ['created', 'user', 'title', 'is_read', 'owner']
 
+    def create(self, validated_data):
+        return Reading(**validated_data)
+
+    def post(self):
+        return Reading(**self)
