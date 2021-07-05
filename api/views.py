@@ -1,4 +1,5 @@
-from rest_framework import viewsets, renderers, generics, status
+from django.http import request
+from rest_framework import viewsets, renderers, generics, status, mixins
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -65,6 +66,24 @@ class BookViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
+class BookUpdateViewSet(mixins.ListModelMixin, viewsets.GenericViewSet,):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, *args, **kwargs):
+        if request.method == 'GET':
+            books = Book.objects.all()
+            serializer = BookSerializer(books, many=True)
+            return Response(serializer.data)
+        elif request.method == 'POST':
+            serializer = BookSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class AuthorViewSet(viewsets.ModelViewSet):
     """
     This viewSet automatically provides `list`, `create`, `retrieve`,
@@ -116,27 +135,17 @@ class GenreViewSet(viewsets.ModelViewSet):
 
 
 class ReadingViewSet(viewsets.ModelViewSet):
-    """
-    This viewSet automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
 
-    Additionally we also provide an extra `highlight` action.
-    """
     queryset = Reading.objects.all()
     serializer_class = ReadingSerializer
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
+
+    def perform_create(self, serializer, **kwargs):
+        serializer.save(**kwargs)
 
 
-    def perform_create(self, serializer):
-        serializer.save()
 
-    def post(self, request):
-        serializer = ReadingSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def create(self, request):
-        pass
+

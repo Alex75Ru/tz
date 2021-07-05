@@ -1,4 +1,6 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
+
 from api.models import Book, Genre, Author, Reading
 from .models import Post
 from taggit_serializer.serializers import TagListSerializerField, TaggitSerializer
@@ -88,10 +90,7 @@ class BookSerializer(serializers.ModelSerializer):
         lookup_field = 'genre'
 
 
-
-
-
-class ReadingSerializer(serializers.HyperlinkedModelSerializer):
+class ReadingSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     # highlight = serializers.HyperlinkedIdentityField(view_name='reading-highlight', format='html')
 
@@ -99,8 +98,5 @@ class ReadingSerializer(serializers.HyperlinkedModelSerializer):
         model = Reading
         fields = ['created', 'user', 'title', 'is_read', 'owner']
 
-    def create(self, validated_data):
-        return Reading(**validated_data)
-
-    def post(self):
-        return Reading(**self)
+    def perform_create(self, serializer, **kwargs):
+        serializer.save(**kwargs)
