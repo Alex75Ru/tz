@@ -24,8 +24,11 @@ router.register(r'book_update', views.BookUpdateViewSet, basename='add_books')
 
 
 
+
+
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
+
     url(r'^book_update/$', book_update, name='book_update'),
     path(r'book_update/', include(router.urls)),
     path(r'reading/', include(router.urls)),

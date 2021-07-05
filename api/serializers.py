@@ -80,8 +80,22 @@ class BookSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True, many=True)
     genre = GenreSerializer(read_only=True, many=True)
 
+    #def create(self, validated_data):
+    #    return Book(**validated_data)
+
     def create(self, validated_data):
-        return Book(**validated_data)
+        created = validated_data["created"]
+        title = validated_data["title"]
+        description = validated_data["description"]
+        genre = validated_data["genre"]
+        user = validated_data["user"]
+        cover = validated_data["cover"]
+        pdf_file = validated_data["pdf_file"]
+        title = validated_data["title"]
+        description = validated_data["description"]
+        book = Book(title=title)
+        book.save()
+        return book
 
     class Meta:
         model = Book

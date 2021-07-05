@@ -66,22 +66,29 @@ class BookViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
+class BookCreateViewSet(generics.CreateAPIView):
+    serializer_class = BookSerializer
+    #permission_classes = [permissions.AllowAny]
+
+
 class BookUpdateViewSet(mixins.ListModelMixin, viewsets.GenericViewSet,):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [permissions.AllowAny]
 
-    def create(self, *args, **kwargs):
-        if request.method == 'GET':
-            books = Book.objects.all()
-            serializer = BookSerializer(books, many=True)
-            return Response(serializer.data)
-        elif request.method == 'POST':
-            serializer = BookSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, validated_data):
+        created = validated_data["created"]
+        title = validated_data["title"]
+        description = validated_data["description"]
+        genre = validated_data["genre"]
+        user = validated_data["user"]
+        cover = validated_data["cover"]
+        pdf_file = validated_data["pdf_file"]
+        title = validated_data["title"]
+        description = validated_data["description"]
+        book = Book(title=title)
+        book.save()
+        return book
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
