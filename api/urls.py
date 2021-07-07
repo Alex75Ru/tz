@@ -33,7 +33,7 @@ urlpatterns = [
     path("api/token/", TokenObtainPairView.as_view(), name="token"),
     path("api/refresh_token/", TokenRefreshView.as_view(), name="refresh_token"),
     path("ckeditor/", include('ckeditor_uploader.urls')),
-    path('register/', views.RegisterView.as_view()),
+    path('register/', views.RegisterViewSet.as_view(as_view_common)),
     #path("", include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

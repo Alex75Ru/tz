@@ -14,7 +14,7 @@ from .serializers import RegisterSerializer
 
 
 #TODO переделать на viewSet
-class RegisterView(generics.GenericAPIView):
+class RegisterViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
 
@@ -35,7 +35,6 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     lookup_field = 'slug'
     permission_classes = [permissions.AllowAny]
-
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -100,10 +99,11 @@ class GenreViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-    # TODO добавить фильтрацию по юзеру
+
+    #TODO добавить фильтрацию по юзеру
 class ReadingViewSet(viewsets.ModelViewSet):
 
-    queryset = Reading.objects.all()
+    queryset = Reading.objects.filter()
     serializer_class = ReadingSerializer
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     # permission_classes = [IsAuthenticated]
