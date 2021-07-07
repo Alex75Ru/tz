@@ -12,6 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
+        # TODO Выписать все нужные поля
         fields = '__all__'
 
 
@@ -27,7 +28,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "password2",
         ]
         extra_kwargs = {"password": {"write_only": True}}
-
+    #TODO Вынести проверку в функцию валидации
     def create(self, validated_data):
         username = validated_data["username"]
         password = validated_data["password"]
@@ -90,28 +91,11 @@ class BookSerializer(serializers.ModelSerializer):
                   'description', 'genre', 'author', 'user', 'cover', 'pdf_file']
         lookup_field = 'genre'
 
-        def create(self, validated_data):
-            created = validated_data["created"]
-            title = validated_data["title"]
-            description = validated_data["description"]
-            genre = validated_data["genre"]
-            user = validated_data["user"]
-            cover = validated_data["cover"]
-            pdf_file = validated_data["pdf_file"]
-            title = validated_data["title"]
-            description = validated_data["description"]
-            book = Book(title=title)
-            book.save()
-            return book
-
 
 class ReadingSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    # highlight = serializers.HyperlinkedIdentityField(view_name='reading-highlight', format='html')
 
     class Meta:
         model = Reading
-        fields = ['created', 'user', 'title', 'is_read', 'owner']
+        fields = ['created', 'user', 'title', 'is_read']
 
-    def perform_create(self, serializer, **kwargs):
-        serializer.save(**kwargs)
+

@@ -40,31 +40,25 @@ class Author(models.Model):
     class Meta:
         ordering = ['name']
 
-
+    # TODO добавить функцию для создания каталога для картинки по имени модели и для файла в пдф
 class Book(models.Model):
     created = models.DateTimeField(verbose_name='Дата добавления', auto_now_add=True)
     title = models.CharField(verbose_name='Название', max_length=100)
     description = RichTextUploadingField(verbose_name='Описание', max_length=500)
-    genre = models.ManyToManyField(Genre, verbose_name='Жанр', max_length=100)
-    author = models.ManyToManyField(Author, verbose_name='Автор', max_length=100)
-    user = models.ForeignKey(User, verbose_name='Пользователь', max_length=100, on_delete=models.CASCADE)
+    genre = models.ManyToManyField(Genre, verbose_name='Жанр')
+    author = models.ManyToManyField(Author, verbose_name='Автор')
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
     cover = models.ImageField(verbose_name='Обложка')
     pdf_file = models.FileField(verbose_name='Книга в формате PDF')
 
     def __str__(self):
         return self.title
 
-    def perform_create(self):
-        pass
-
-    class Meta:
-        ordering = ['created']
-
 
 class Reading(models.Model):
-    created = models.DateTimeField(verbose_name='Создано', auto_now_add=True, max_length=100)
-    user = models.ForeignKey(User, verbose_name='Пользователь', max_length=100, on_delete=models.CASCADE)
-    title = models.ForeignKey(Book, verbose_name='Книга', max_length=100, on_delete=models.CASCADE)
+    created = models.DateTimeField(verbose_name='Создано', auto_now_add=True)
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
+    title = models.ForeignKey(Book, verbose_name='Книга', on_delete=models.CASCADE)
     is_read = models.BooleanField(verbose_name='Прочитано', default=False)
 
     class Meta:

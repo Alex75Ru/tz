@@ -1,20 +1,19 @@
-from django.http import request
-from rest_framework import viewsets, renderers, generics, status, mixins
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import permissions
-
-from api.models import Book, User, Genre, Author, Reading, Post
-from api.serializers import UserSerializer, GenreSerializer, AuthorSerializer, ReadingSerializer
-from api.serializers import BookSerializer
-from api.permissions import IsOwnerOrReadOnly
-from .serializers import PostSerializer
 from rest_framework import filters
-from .serializers import RegisterSerializer
 from rest_framework import pagination
+from rest_framework import permissions
+from rest_framework import (viewsets, renderers, generics, status, mixins)
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from api.models import (Book, User, Genre, Author, Reading, Post)
+from api.permissions import IsOwnerOrReadOnly
+from api.serializers import BookSerializer
+from api.serializers import (UserSerializer, GenreSerializer, AuthorSerializer, ReadingSerializer)
+from .serializers import PostSerializer
+from .serializers import RegisterSerializer
 
 
+#TODO переделать на viewSet
 class RegisterView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
@@ -29,12 +28,6 @@ class RegisterView(generics.GenericAPIView):
         })
 
 
-class PageNumberSetPagination(pagination.PageNumberPagination):
-    page_size = 6
-    page_size_query_param = 'page_size'
-    ordering = 'created_at'
-
-
 class PostViewSet(viewsets.ModelViewSet):
     search_fields = ['content', 'h1']
     filter_backends = (filters.SearchFilter,)
@@ -42,7 +35,7 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     lookup_field = 'slug'
     permission_classes = [permissions.AllowAny]
-    pagination_class = PageNumberSetPagination
+
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -57,39 +50,6 @@ class BookViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly]
 
-    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
-    def highlight(self, request, *args, **kwargs):
-        book = self.get_object()
-        return Response(book.highlighted)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-
-class BookCreateViewSet(generics.CreateAPIView):
-    serializer_class = BookSerializer
-    #permission_classes = [permissions.AllowAny]
-
-
-class BookUpdateViewSet(mixins.CreateModelMixin):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]
-    """
-        def create(self, validated_data):
-        created = validated_data["created"]
-        title = validated_data["title"]
-        description = validated_data["description"]
-        genre = validated_data["genre"]
-        user = validated_data["user"]
-        cover = validated_data["cover"]
-        pdf_file = validated_data["pdf_file"]
-        title = validated_data["title"]
-        description = validated_data["description"]
-        book = Book(title=title)
-        book.save()
-        return book
-    """
 
 class AuthorViewSet(viewsets.ModelViewSet):
     """
@@ -140,7 +100,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-
+    # TODO добавить фильтрацию по юзеру
 class ReadingViewSet(viewsets.ModelViewSet):
 
     queryset = Reading.objects.all()
@@ -149,8 +109,14 @@ class ReadingViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     permission_classes = [permissions.AllowAny]
 
-    def perform_create(self, serializer, **kwargs):
-        serializer.save(**kwargs)
+    def create(self, request, *args, **kwargs):
+        data = request.data.copy()
+        data["user"] = request.user.pk
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        model = serializer.save()
+        serializer_view = self.get_serializer(model)
+        return Response(serializer_view.data, status=status.HTTP_201_CREATED)
 
 
 
