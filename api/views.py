@@ -71,12 +71,12 @@ class BookCreateViewSet(generics.CreateAPIView):
     #permission_classes = [permissions.AllowAny]
 
 
-class BookUpdateViewSet(mixins.ListModelMixin, viewsets.GenericViewSet,):
+class BookUpdateViewSet(mixins.CreateModelMixin):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [permissions.AllowAny]
-
-    def create(self, validated_data):
+    """
+        def create(self, validated_data):
         created = validated_data["created"]
         title = validated_data["title"]
         description = validated_data["description"]
@@ -89,7 +89,7 @@ class BookUpdateViewSet(mixins.ListModelMixin, viewsets.GenericViewSet,):
         book = Book(title=title)
         book.save()
         return book
-
+    """
 
 class AuthorViewSet(viewsets.ModelViewSet):
     """
