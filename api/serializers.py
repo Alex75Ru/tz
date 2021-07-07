@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    books = serializers.HyperlinkedRelatedField(many=True, view_name='book-detail', read_only=True)
 
     class Meta:
         model = User
