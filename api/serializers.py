@@ -28,7 +28,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "password2",
         ]
         extra_kwargs = {"password": {"write_only": True}}
-    #TODO Вынести проверку в функцию валидации
+    #TODO Вынести проверку в функцию  валидации
     def create(self, validated_data):
         username = validated_data["username"]
         password = validated_data["password"]
