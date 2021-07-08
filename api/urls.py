@@ -19,7 +19,7 @@ router.register(r'posts', views.PostViewSet, basename='posts')
 """
 as_view_common = {"get": "list", "post": "create"}
 as_view_with_pk = {"get": "retrieve", "put": "update", "delete": "destroy"}
-
+#TODO Привести в порядок URLS.py
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [

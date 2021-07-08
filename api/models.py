@@ -48,8 +48,8 @@ class Book(models.Model):
     genre = models.ManyToManyField(Genre, verbose_name='Жанр')
     author = models.ManyToManyField(Author, verbose_name='Автор')
     user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
-    cover = models.ImageField(verbose_name='Обложка')
-    pdf_file = models.FileField(verbose_name='Книга в формате PDF')
+    cover = models.ImageField(upload_to='book/images/%Y/%m', verbose_name='Обложка')
+    pdf_file = models.FileField(upload_to='book/pdfs/%Y/%m', verbose_name='Книга в формате PDF')
 
     def __str__(self):
         return self.title
