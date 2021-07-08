@@ -14,11 +14,15 @@ from .serializers import RegisterSerializer
 
 
 #TODO переделать на viewSet
+# переделал - работает
+# непонято - почему не срабатывал переопределенный post(когда был раскомментирован)
+# - возвращаемое сообщение было: {"username":"user4"}
+# - разобрался - переименовал POST в CREATE
 class RegisterViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
 
-    def post(self, request, *args,  **kwargs):
+    def create(self, request, *args,  **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()

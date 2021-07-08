@@ -41,6 +41,8 @@ class Author(models.Model):
         ordering = ['name']
 
     # TODO добавить функцию для создания каталога для картинки по имени модели и для файла в пдф
+    # Обошёлся встроенным параметром upload_to и добавил разбиение по годам и месяцам
+    # Для добавления разбиения по дням необходимо будет добавить /%d
 class Book(models.Model):
     created = models.DateTimeField(verbose_name='Дата добавления', auto_now_add=True)
     title = models.CharField(verbose_name='Название', max_length=100)

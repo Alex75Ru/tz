@@ -12,6 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # TODO Выписать все нужные поля
+        # Можно ещё добавить встроенные first_name & last_name если потребуется
         fields = ("id", 'username', 'email')
 
 
