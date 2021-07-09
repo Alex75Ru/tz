@@ -105,13 +105,12 @@ class GenreViewSet(viewsets.ModelViewSet):
 
 
     #TODO добавить фильтрацию по юзеру
+    # добавил проверку на пользователя, теперь редактировать свой список прочтения может только владелец
 class ReadingViewSet(viewsets.ModelViewSet):
 
-    queryset = Reading.objects.filter()
+    queryset = Reading.objects.all()
     serializer_class = ReadingSerializer
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
@@ -122,7 +121,13 @@ class ReadingViewSet(viewsets.ModelViewSet):
         serializer_view = self.get_serializer(model)
         return Response(serializer_view.data, status=status.HTTP_201_CREATED)
 
+# Личный список пользователя для чтения
+class ReadingRatingViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+        user = self.request.user
+        return Reading.objects.filter(user=user)
 
-
+    serializer_class = ReadingSerializer
+    permission_classes = [IsOwnerOrReadOnly]
 
 

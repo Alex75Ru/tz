@@ -75,21 +75,14 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class BookSerializer(serializers.ModelSerializer):
 
-    # owner = serializers.ReadOnlyField(source='owner.username')
-    # highlight = serializers.HyperlinkedIdentityField(view_name='book-highlight', format='html')
-
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     author = AuthorSerializer(read_only=True, many=True)
     genre = GenreSerializer(read_only=True, many=True)
-
-    #def create(self, validated_data):
-    #    return Book(**validated_data)
 
     class Meta:
         model = Book
         fields = ['id', 'created', 'title',
                   'description', 'genre', 'author', 'user', 'cover', 'pdf_file']
-        lookup_field = 'genre'
 
 
 class ReadingSerializer(serializers.ModelSerializer):
