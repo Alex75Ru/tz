@@ -29,8 +29,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {"password": {"write_only": True}}
 
-    def validate(self, attrs):
-        return attrs
+    """def validate(self, validated_data):
+        username = validated_data["username"]
+        password = validated_data["password"]
+        password2 = validated_data["password2"]
+        if password != password2:
+            raise serializers.ValidationError({"password": "Пароли не совпадают"})
+        return validated_data"""
 
     #TODO Вынести проверку в функцию  валидации
     def create(self, validated_data):
