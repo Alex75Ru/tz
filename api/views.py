@@ -12,11 +12,6 @@ from .serializers import PostSerializer
 from .serializers import RegisterSerializer
 
 
-#TODO переделать на viewSet
-# переделал - работает
-# непонято - почему не срабатывал переопределенный post(когда был раскомментирован)
-# - возвращаемое сообщение было: {"username":"user4"}
-# - разобрался - переименовал POST в CREATE
 class RegisterViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
