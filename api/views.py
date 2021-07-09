@@ -1,8 +1,8 @@
 from rest_framework import filters
-from rest_framework import pagination
 from rest_framework import permissions
 from rest_framework import (viewsets, renderers, generics, status, mixins)
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.models import (Book, User, Genre, Author, Reading, Post)
@@ -121,13 +121,20 @@ class ReadingViewSet(viewsets.ModelViewSet):
         serializer_view = self.get_serializer(model)
         return Response(serializer_view.data, status=status.HTTP_201_CREATED)
 
-# Личный список пользователя для чтения
+#TODO рейтинг книг
 class ReadingRatingViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+
+        return Reading.objects.distinct()
+
+    serializer_class = ReadingSerializer
+    permission_classes = [AllowAny]
+
+# Личный список пользователя для чтения
+class ReadingListViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return Reading.objects.filter(user=user)
 
     serializer_class = ReadingSerializer
     permission_classes = [IsOwnerOrReadOnly]
-
-

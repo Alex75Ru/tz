@@ -63,5 +63,8 @@ class Reading(models.Model):
     title = models.ForeignKey(Book, verbose_name='Книга', on_delete=models.CASCADE)
     is_read = models.BooleanField(verbose_name='Прочитано', default=False)
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         ordering = ['title']
