@@ -92,3 +92,13 @@ class ReadingSerializer(serializers.ModelSerializer):
         fields = ['created', 'user', 'title', 'is_read']
 
 
+class ReadingRatingSerializer(serializers.ModelSerializer):
+
+    def get_queryset(self):
+        return Reading.objects.filter(is_read="True").count()
+
+    class Meta:
+        model = Reading
+        fields = ['created', 'user', 'title', 'is_read']
+
+

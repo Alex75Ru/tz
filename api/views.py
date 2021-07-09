@@ -1,13 +1,12 @@
 from rest_framework import filters
 from rest_framework import permissions
 from rest_framework import (viewsets, renderers, generics, status, mixins)
-from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.models import (Book, User, Genre, Author, Reading, Post)
 from api.permissions import IsOwnerOrReadOnly
-from api.serializers import BookSerializer
+from api.serializers import BookSerializer, ReadingRatingSerializer
 from api.serializers import (UserSerializer, GenreSerializer, AuthorSerializer, ReadingSerializer)
 from .serializers import PostSerializer
 from .serializers import RegisterSerializer
@@ -63,16 +62,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
     """
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly]
-
-    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
-    def highlight(self, request, *args, **kwargs):
-        author = self.get_object()
-        return Response(author.highlighted)
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    permission_classes = [permissions.IsAdminUser]
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -84,24 +74,10 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class GenreViewSet(viewsets.ModelViewSet):
-    """
-    This viewSet automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
 
-    Additionally we also provide an extra `highlight` action.
-    """
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly]
-
-    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
-    def highlight(self, request, *args, **kwargs):
-        genre = self.get_object()
-        return Response(genre.highlighted)
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    permission_classes = [permissions.IsAdminUser]
 
 
     #TODO добавить фильтрацию по юзеру
@@ -121,14 +97,13 @@ class ReadingViewSet(viewsets.ModelViewSet):
         serializer_view = self.get_serializer(model)
         return Response(serializer_view.data, status=status.HTTP_201_CREATED)
 
+
 #TODO рейтинг книг
 class ReadingRatingViewSet(viewsets.ModelViewSet):
-    def get_queryset(self):
 
-        return Reading.objects.distinct()
-
-    serializer_class = ReadingSerializer
+    serializer_class = ReadingRatingSerializer
     permission_classes = [AllowAny]
+
 
 # Личный список пользователя для чтения
 class ReadingListViewSet(viewsets.ModelViewSet):
