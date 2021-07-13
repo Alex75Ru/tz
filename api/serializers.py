@@ -107,8 +107,10 @@ class ReadingRatingSerializer(serializers.ModelSerializer):
     """def queryset(self):
         return Reading.objects.filter(is_read=True).distinct('title').count()"""
 
+    count_reading = serializers.Serializer('count_reading')
+
     class Meta:
         model = Reading
-        fields = ['user', 'title', 'is_read']
+        fields = ['title', 'count_reading']
 
 
