@@ -105,6 +105,16 @@ class ReadingRatingViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
 
+class ReadingWishRatingViewSet(viewsets.ModelViewSet):
+
+    def get_queryset(self):
+        sql_query = "SELECT title_id as id, count(created) as count_reading FROM api_reading where is_read = 'False'" \
+                    " GROUP BY title_id ORDER BY count(created) DESC"
+        return Reading.objects.raw(sql_query)
+
+    serializer_class = ReadingRatingSerializer
+    permission_classes = [AllowAny]
+
 # Личный список пользователя для чтения
 class ReadingListViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
