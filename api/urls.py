@@ -1,9 +1,9 @@
 from django.conf.urls.static import static
 from django.urls import path, include
+from django.conf import settings
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
 from api import views
-from library import settings
+
 
 as_view_common = {"get": "list", "post": "create"}
 as_view_get = {"get": "list"}

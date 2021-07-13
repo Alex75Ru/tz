@@ -96,6 +96,10 @@ class ReadingViewSet(viewsets.ModelViewSet):
 #TODO рейтинг книг
 class ReadingRatingViewSet(viewsets.ModelViewSet):
 
+    def get_queryset(self):
+        sql_query = "SELECT title, count(created) FROM library.reading where is_read = 'True' GROUP BY title"
+        return Reading.objects.raw(sql_query)
+
     serializer_class = ReadingRatingSerializer
     permission_classes = [AllowAny]
 
