@@ -29,22 +29,28 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {"password": {"write_only": True}}
 
-    """def validate(self, validated_data):
+    '''def validate(self, validated_data):
         username = validated_data["username"]
         password = validated_data["password"]
         password2 = validated_data["password2"]
         if password != password2:
-            raise serializers.ValidationError({"password": "Пароли не совпадают"})
-        return validated_data"""
+            raise serializers.ValidationError({"password": "Пароли не совпадают!"})
+        return username, password,'''
+
+    def validate(self, validated_data):
+        password = validated_data["password"]
+        password2 = validated_data["password2"]
+        if password != password2:
+            raise serializers.ValidationError({"password": "Пароли не совпадают!"})
+        return password
 
     #TODO Вынести проверку в функцию  валидации
+    # перенес в функцию validate
     def create(self, validated_data):
+        #TODO почему тут ошибка 'tuple' object is not a mapping при другой версии validate?
+        #username, password = RegisterSerializer.validate(self, validated_data)
         username = validated_data["username"]
-        password = validated_data["password"]
-        password2 = validated_data["password2"]
-
-        if password != password2:
-            raise serializers.ValidationError({"password": "Пароли не совпадают"})
+        password = RegisterSerializer.validate(self, validated_data)
         user = User(username=username)
         user.set_password(password)
         user.save()
@@ -103,9 +109,6 @@ class ReadingSerializer(serializers.ModelSerializer):
 
 
 class ReadingRatingSerializer(serializers.ModelSerializer):
-    #queryset = Reading.objects.filter(is_read=True).distinct('title')
-    """def queryset(self):
-        return Reading.objects.filter(is_read=True).distinct('title').count()"""
 
     count_reading = serializers.Serializer('count_reading')
 
