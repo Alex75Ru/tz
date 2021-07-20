@@ -106,13 +106,11 @@ class ReadingSerializer(serializers.ModelSerializer):
 
 class ReadingRatingSerializer(serializers.ModelSerializer):
 
-    #count_reading = serializers.Serializer('count_reading')
     count_reading = serializers.SerializerMethodField()
 
     class Meta:
         model = Book
         fields = ['count_reading', 'title' ]
-        ordering_fields = ['count_reading']
 
     def get_count_reading(self, instance):
         return Reading.objects.filter(title=instance, is_read=True).count()

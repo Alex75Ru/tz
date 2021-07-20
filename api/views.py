@@ -95,6 +95,7 @@ class ReadingViewSet(viewsets.ModelViewSet):
 
 
 #TODO рейтинг книг
+# Рейтинг прочитанных книг
 class ReadingRatingViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
@@ -117,6 +118,7 @@ class ReadingRatingViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]"""
 
 
+# Рейтинг выбранных книг, но не прочитанных
 class ReadingWishRatingViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     filter_backends = [DjangoFilterBackend, OrderingFilter]
