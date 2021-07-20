@@ -72,8 +72,6 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-    # owner = serializers.ReadOnlyField(source='owner.username')
-    # highlight = serializers.HyperlinkedIdentityField(view_name='author-highlight', format='html')
 
     class Meta:
         model = Author
@@ -81,8 +79,6 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    # owner = serializers.ReadOnlyField(source='owner.username')
-    # highlight = serializers.HyperlinkedIdentityField(view_name='genre-highlight', format='html')
 
     class Meta:
         model = Genre
@@ -110,10 +106,25 @@ class ReadingSerializer(serializers.ModelSerializer):
 
 class ReadingRatingSerializer(serializers.ModelSerializer):
 
-    count_reading = serializers.Serializer('count_reading')
+    #count_reading = serializers.Serializer('count_reading')
+    count_reading = serializers.SerializerMethodField()
 
     class Meta:
-        model = Reading
-        fields = ['title', 'count_reading']
+        model = Book
+        fields = ['count_reading', 'title' ]
+        ordering_fields = ['count_reading']
+
+    def get_count_reading(self, instance):
+        return Reading.objects.filter(title=instance, is_read=True).count()
 
 
+class ReadingRatingCountSerializer(serializers.ModelSerializer):
+
+    count_reading = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Book
+        fields = ['count_reading', 'title']
+
+    def get_count_reading(self, instance):
+        return Reading.objects.filter(title=instance, is_read=False).count()

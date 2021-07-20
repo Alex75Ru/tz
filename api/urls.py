@@ -16,7 +16,7 @@ urlpatterns = [
     path('reading/', views.ReadingViewSet.as_view(as_view_common)),
     path('reading/<int:pk>/', views.ReadingViewSet.as_view(as_view_with_pk)),
     path('reading_rating/', views.ReadingRatingViewSet.as_view(as_view_get), name="Рейтинг книг"),
-    path('reading_wish_rating/', views.ReadingRatingViewSet.as_view(as_view_get), name="Рейтинг книг"),
+    path('reading_wish_rating/', views.ReadingWishRatingViewSet.as_view(as_view_get), name="Рейтинг книг"),
     path('reading_list/', views.ReadingListViewSet.as_view(as_view_get), name="Список книг"),
     path("api/token/", TokenObtainPairView.as_view(), name="token"),
     path("api/refresh_token/", TokenRefreshView.as_view(), name="refresh_token"),

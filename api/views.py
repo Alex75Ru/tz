@@ -1,15 +1,16 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import permissions
-from rest_framework import (viewsets, renderers, generics, status, mixins)
+from rest_framework import (viewsets, status)
+from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.models import (Book, User, Genre, Author, Reading, Post)
 from api.permissions import IsOwnerOrReadOnly
-from api.serializers import BookSerializer, ReadingRatingSerializer
+from api.serializers import BookSerializer, ReadingRatingSerializer, ReadingRatingCountSerializer
 from api.serializers import (UserSerializer, GenreSerializer, AuthorSerializer, ReadingSerializer)
-from .serializers import PostSerializer
-from .serializers import RegisterSerializer
+from .serializers import PostSerializer, RegisterSerializer
 
 
 class RegisterViewSet(viewsets.ModelViewSet):
@@ -99,13 +100,13 @@ class ReadingRatingViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         sql_query = "SELECT title_id as id, count(created) as count_reading FROM api_reading where is_read = 'True'" \
                     " GROUP BY title_id ORDER BY count(created) DESC"
-        return Reading.objects.raw(sql_query)
+        return Book.objects.raw(sql_query)
 
     serializer_class = ReadingRatingSerializer
     permission_classes = [AllowAny]
 
 
-class ReadingWishRatingViewSet(viewsets.ModelViewSet):
+"""class ReadingWishRatingViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         sql_query = "SELECT title_id as id, count(created) as count_reading FROM api_reading where is_read = 'False'" \
@@ -113,7 +114,16 @@ class ReadingWishRatingViewSet(viewsets.ModelViewSet):
         return Reading.objects.raw(sql_query)
 
     serializer_class = ReadingRatingSerializer
+    permission_classes = [AllowAny]"""
+
+
+class ReadingWishRatingViewSet(viewsets.ModelViewSet):
+    queryset = Book.objects.all()
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['count_reading']
+    serializer_class = ReadingRatingCountSerializer
     permission_classes = [AllowAny]
+
 
 # Личный список пользователя для чтения
 class ReadingListViewSet(viewsets.ModelViewSet):

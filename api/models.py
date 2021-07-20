@@ -65,6 +65,3 @@ class Reading(models.Model):
 
     def __str__(self):
         return str(self.title)
-
-    class Meta:
-        ordering = ['title']
