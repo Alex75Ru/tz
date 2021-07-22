@@ -1,3 +1,4 @@
+from django.db.models import Count, Case, When
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import permissions
@@ -8,7 +9,7 @@ from rest_framework.response import Response
 
 from api.models import (Book, User, Genre, Author, Reading, Post)
 from api.permissions import IsOwnerOrReadOnly
-from api.serializers import BookSerializer, ReadingRatingSerializer, ReadingRatingCountSerializer
+from api.serializers import BookSerializer, ReadingRatingSerializer
 from api.serializers import (UserSerializer, GenreSerializer, AuthorSerializer, ReadingSerializer)
 from .serializers import PostSerializer, RegisterSerializer
 
@@ -95,14 +96,12 @@ class ReadingViewSet(viewsets.ModelViewSet):
 
 
 #TODO рейтинг книг
-# Рейтинг прочитанных книг
+#TODO сделать через агрегацию и аннотацию
 class ReadingRatingViewSet(viewsets.ModelViewSet):
-
-    def get_queryset(self):
-        sql_query = "SELECT title_id as id, count(created) as count_reading FROM api_reading where is_read = 'True'" \
-                    " GROUP BY title_id ORDER BY count(created) DESC"
-        return Book.objects.raw(sql_query)
-
+    # Рейтинг прочитанных книг
+    queryset = Book.objects.all().annotate(count_reading=Count(Case(When(reading__is_read=True, then=1))))
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    ordering_fields = ['count_reading', 'title']
     serializer_class = ReadingRatingSerializer
     permission_classes = [AllowAny]
 
@@ -118,12 +117,13 @@ class ReadingRatingViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]"""
 
 
-# Рейтинг выбранных книг, но не прочитанных
+#TODO сделать через агрегацию и аннотацию
 class ReadingWishRatingViewSet(viewsets.ModelViewSet):
-    queryset = Book.objects.all()
+    # Рейтинг выбранных книг, но не прочитанных
+    queryset = Book.objects.all().annotate(count_reading=Count(Case(When(reading__is_read=False, then=1))))
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ['count_reading']
-    serializer_class = ReadingRatingCountSerializer
+    ordering_fields = ['count_reading', 'title']
+    serializer_class = ReadingRatingSerializer
     permission_classes = [AllowAny]
 
 

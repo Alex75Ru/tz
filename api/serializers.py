@@ -6,6 +6,8 @@ from .models import Post
 from taggit_serializer.serializers import TagListSerializerField, TaggitSerializer
 from django.contrib.auth.models import User
 
+from .utils import check_password
+
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -29,28 +31,22 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {"password": {"write_only": True}}
 
-    '''def validate(self, validated_data):
-        username = validated_data["username"]
-        password = validated_data["password"]
-        password2 = validated_data["password2"]
+    def validate(self, attrs):
+        password = attrs["password"]
+        if not check_password(password):
+            raise serializers.ValidationError({"password": "Необходим более сложный пароль: минимум 8 знаков, "
+                                                           "должны быть цифры, строчные и заглавные буквы"})
+        password2 = attrs["password2"]
         if password != password2:
             raise serializers.ValidationError({"password": "Пароли не совпадают!"})
-        return username, password,'''
 
-    def validate(self, validated_data):
-        password = validated_data["password"]
-        password2 = validated_data["password2"]
-        if password != password2:
-            raise serializers.ValidationError({"password": "Пароли не совпадают!"})
-        return password
+        return attrs
 
     #TODO Вынести проверку в функцию  валидации
     # перенес в функцию validate
     def create(self, validated_data):
-        #TODO почему тут ошибка 'tuple' object is not a mapping при другой версии validate?
-        #username, password = RegisterSerializer.validate(self, validated_data)
         username = validated_data["username"]
-        password = RegisterSerializer.validate(self, validated_data)
+        password = validated_data["password"]
         user = User(username=username)
         user.set_password(password)
         user.save()
@@ -106,23 +102,12 @@ class ReadingSerializer(serializers.ModelSerializer):
 
 class ReadingRatingSerializer(serializers.ModelSerializer):
 
-    count_reading = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Book
-        fields = ['count_reading', 'title' ]
-
-    def get_count_reading(self, instance):
-        return Reading.objects.filter(title=instance, is_read=True).count()
-
-
-class ReadingRatingCountSerializer(serializers.ModelSerializer):
-
-    count_reading = serializers.SerializerMethodField()
+    count_reading = serializers.IntegerField()
 
     class Meta:
         model = Book
         fields = ['count_reading', 'title']
 
-    def get_count_reading(self, instance):
-        return Reading.objects.filter(title=instance, is_read=False).count()
+
+
+
