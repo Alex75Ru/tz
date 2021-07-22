@@ -64,7 +64,4 @@ class Reading(models.Model):
     is_read = models.BooleanField(verbose_name='Прочитано', default=False)
 
     def __str__(self):
-        return self.title
-
-    class Meta:
-        ordering = ['title']
+        return str(self.title)

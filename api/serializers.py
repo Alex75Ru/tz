@@ -6,6 +6,8 @@ from .models import Post
 from taggit_serializer.serializers import TagListSerializerField, TaggitSerializer
 from django.contrib.auth.models import User
 
+from .utils import check_password
+
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -30,16 +32,21 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate(self, attrs):
+        password = attrs["password"]
+        if not check_password(password):
+            raise serializers.ValidationError({"password": "Необходим более сложный пароль: минимум 8 знаков, "
+                                                           "должны быть цифры, строчные и заглавные буквы"})
+        password2 = attrs["password2"]
+        if password != password2:
+            raise serializers.ValidationError({"password": "Пароли не совпадают!"})
+
         return attrs
 
     #TODO Вынести проверку в функцию  валидации
+    # перенес в функцию validate
     def create(self, validated_data):
         username = validated_data["username"]
         password = validated_data["password"]
-        password2 = validated_data["password2"]
-
-        if password != password2:
-            raise serializers.ValidationError({"password": "Пароли не совпадают"})
         user = User(username=username)
         user.set_password(password)
         user.save()
@@ -61,8 +68,6 @@ class PostSerializer(TaggitSerializer, serializers.ModelSerializer):
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-    # owner = serializers.ReadOnlyField(source='owner.username')
-    # highlight = serializers.HyperlinkedIdentityField(view_name='author-highlight', format='html')
 
     class Meta:
         model = Author
@@ -70,8 +75,6 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    # owner = serializers.ReadOnlyField(source='owner.username')
-    # highlight = serializers.HyperlinkedIdentityField(view_name='genre-highlight', format='html')
 
     class Meta:
         model = Genre
@@ -99,11 +102,12 @@ class ReadingSerializer(serializers.ModelSerializer):
 
 class ReadingRatingSerializer(serializers.ModelSerializer):
 
-    def get_queryset(self):
-        return Reading.objects.filter(is_read="True").count()
+    count_reading = serializers.IntegerField()
 
     class Meta:
-        model = Reading
-        fields = ['created', 'user', 'title', 'is_read']
+        model = Book
+        fields = ['count_reading', 'title']
+
+
 
 
